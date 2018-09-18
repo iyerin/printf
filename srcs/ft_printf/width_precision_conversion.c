@@ -15,6 +15,9 @@ void ft_width_conversion(char **str, t_flags *specs)
 	ssize_t j;
 
 	j = specs->width - ft_strlen(*str);
+	//printf("j = %zi\n", j);
+	if (specs->prec_zero == '1')
+		j = specs->width;
 	if (j > 0)
 		while(j-- > 0)
 			*str = ft_strjoin(" ", *str);
@@ -22,30 +25,38 @@ void ft_width_conversion(char **str, t_flags *specs)
 
 void ft_precision_conversion(char **str, t_flags *specs, ssize_t init_str_len)
 {
+	ssize_t i = specs->precision - init_str_len;
+
 	if ((specs->prec_zero == '1') && (specs->zero_octal_hex) && (ft_arg_is_numeric(specs->specs))) 
 	{
 		//printf("HUI\n");
 		*str[0] = 2;
 	}
+	if ((specs->specs == 's') && (i < 0) && ((specs->precision > 0) || (specs->prec_zero)))
+		{
+			//printf("HUI\n");
+			*str = ft_strsub(*str, 0, specs->precision);
+		}
 
 	if (specs->precision > 0)
 	{
 		//printf("prec = %i\n", specs->precision);
-		ssize_t i = specs->precision - init_str_len;
+		
+		if (specs->negative)
+			i++;
+
 		//printf("init = %zu\n", init_str_len);
 		//printf("i === %zu\n", i);
 	///////////////// fix prec 0 ////////////////////////////
-		if ((specs->specs == 's') && (i < 0))
-		{
-			*str = ft_strsub(*str, 0, specs->precision);
-		}
+		
 
 		if (ft_arg_is_numeric(specs->specs) && (i > 0))/////////////fix only 0
 		{
+		//	printf("HUI\n");
 			if (specs->negative)
 			{
 				*str = ft_strsub(*str, 1, ft_strlen(*str) - 1);
-				i++;
+				//i++;
 			}
 			// printf("s1 = %s\n", *str);
 			// if ((specs->hash) && ((specs->specs == 'o') || (specs->specs == 'O') || (specs->specs == 'x') ||(specs->specs == 'X')))
@@ -53,7 +64,7 @@ void ft_precision_conversion(char **str, t_flags *specs, ssize_t init_str_len)
 			// 	*str = ft_strsub(*str, 2, ft_strlen(*str) - 2);
 			// 	//i += 2;
 			// }
-			// printf("s2 = %s\n", *str);
+		//	 printf("s2 = %s\n", *str);
 			while (i-- > 0)
 				*str = ft_strjoin("0", *str);
 			if (specs->negative)

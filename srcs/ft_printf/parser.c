@@ -112,7 +112,7 @@ int   ft_parser(const char *format, t_flags **specs, ssize_t *bytes_counter)
 	// printf(" hash %c\n", (*specs)->hash);
 	// printf(" zero %c\n", (*specs)->zero);
 	// printf("space %c\n\n", (*specs)->space);
-	// printf("Width = %d\n", (*specs)->width);
+	// printf("Width = %zu\n", (*specs)->width);
 	// printf("Precision = %d\n", (*specs)->precision);
 	// printf("Length = %c\n", (*specs)->length);
 	// printf("Spec = %c\n", (*specs)->specs);

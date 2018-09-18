@@ -89,10 +89,15 @@ int ft_printf(const char *format, ...)
     {
     	//printf("i = %zu\n", bytes_counter);
     //	printf("Spec = %c\n", specs->specs);
-
-    	if ((specs->specs == 'd') || (specs->specs == 'i'))
+    	if ((specs->specs == 'd') || (specs->specs == 'i') || (specs->specs == 'D'))
     	{
 			universal_var = va_arg(arg_list, size_t);
+			if (specs->specs == 'D')
+			{
+				specs->length = 'l';
+				specs->specs = 'd';
+				
+			}
 			ft_length_signed_conversion(&str, specs, 10, universal_var);
     	}
     	if (specs->specs == 's')
@@ -106,30 +111,20 @@ int ft_printf(const char *format, ...)
 		}
     	if (specs->specs == 'c')
     	{
-    	//	printf("VaLik\n");
     		str = ft_strnew(1);
     		str[0] = va_arg(arg_list, int);
 			if (!str[0])
 			{
-
-				//printf("HUI\n");
+			//	printf("HUYARA\n");
 				str = ft_strnew(1);
 				specs->charzero = '1';
 				str[0] = 2;
-				//write(1, &str[0], 1);
 			}
-						// {
-
-			// 	//printf("HUI\n");
-			// 	str = ft_strnew(0);
-			// 	specs->charzero = '1';
-			// 	//write(1, &str[0], 1);
-			// }
     	}
     	if (specs->specs == 'p')
 			str = ft_strjoin("0x", ft_itoa_base(va_arg(arg_list, ssize_t), 16));
-	    if (specs->specs == 'D')
-	    	str = ft_itoa_base(va_arg(arg_list, long int), 10);
+	    // if (specs->specs == 'D')
+	    // 	str = ft_itoa_base(va_arg(arg_list, long int), 10);
 	    if (specs->specs == 'o')
 		{	
 			universal_var = va_arg(arg_list, size_t);
@@ -162,56 +157,44 @@ int ft_printf(const char *format, ...)
 	    	specs->specs = 'c';
 	    }
 
-	    // if (specs->specs == '%')
-	    // 	str = "";
-
+	    if (!str)
+	    {
+	    	//printf("SSSSSSSS\n");
+	    	return (bytes_counter);
+	    }
 
 	    // S
-	    // C
+	 //    if (specs->specs == 'C')
+	 //    {			    		
+	 //    	universal_var = va_arg(arg_list, size_t);
+		// 	ft_length_unsigned_conversion(&str, specs, 16, universal_var);
+		// 	str = ft_str_to_upper(str);
+		// }
+
 	// 	printf("str = %s\n", str);
 	    init_str_len = ft_strlen(str);
     	
-    	
+    	//printf("TYT\n");
     	if(str[0] == '-')
     		specs->negative = '1';
     	if(str[0] == '0')
-    	{
     		specs->zero_octal_hex = '1';
-    	//	specs->zero_decimal = '1';
-    	}
-    //	printf("ZERO %c\n",specs->zero_octal_hex);
-
-    	// write(1, "1", 1);
-    	// write(1, &str[0], 1);
+    	//printf("TYT2\n");
     	
     	ft_precision_conversion(&str, specs, init_str_len);
     //	printf("str2 = %s\n", str);
     	
-    	// write(1, "2", 1);
-    	// write(1, &str[0], 1);
-    	
     	ft_flag_conversion(&str, specs);
     //	printf("str3 = %s\n", str);
-    	// write(1, "3", 1);
-    	// write(1, &str[0], 1);
-    	
+
     	ft_width_conversion(&str, specs);
-        
-     //    write(1, "4", 1);
-    	// write(1, &str[0], 1);
-    	// write(1, &str[1], 1);
-    	// write(1, &str[2], 1);
-    	// printf("\nstr = %s\n", str);
-    	//printf("str4 = %s\n", str);
-    	//printf("bc = %zi\n", bytes_counter);
-    	if (specs->prec_zero == '1')
-    	{
-    	//	printf("TYT\n");
+    //	printf("str4 = %s\n", str);
+
+    	if ((specs->prec_zero == '1') && (!specs->charzero))
     		bytes_counter += ft_find_replace_null_decimal(str); 
-    	}
     	else if (specs->charzero == '1')
     	{
-    	//	printf("VALIK\n");
+    		//printf("%s\n", );
     		bytes_counter += ft_find_replace_null_char(str); 
     	}
     	else
