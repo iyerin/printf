@@ -5,6 +5,7 @@
 #include "./libft.h" /////// way
 #include <stdarg.h>
 #include <stdlib.h>
+#include <wchar.h>
 
 int ft_printf(const char *format, ...);
 
@@ -25,6 +26,7 @@ typedef struct	s_flags
     char    charzero;
     char    zero_octal_hex;
     char    prec_zero;
+    char    unicode;
 }				t_flags;
 
 // typedef struct	s_var

@@ -21,7 +21,8 @@ int   ft_parser(const char *format, t_flags **specs, ssize_t *bytes_counter)
 	*specs = malloc(sizeof(t_flags));
 
 	(*specs)->hash = (*specs)->zero = (*specs)->minus = (*specs)->plus = (*specs)->space = (*specs)->width
-	 = (*specs)->precision = (*specs)->length = (*specs)->specs = (*specs)->negative = (*specs)->antispecs = (*specs)->charzero = (*specs)->zero_octal_hex = (*specs)->prec_zero = 0;
+	 = (*specs)->precision = (*specs)->length = (*specs)->specs = (*specs)->negative = (*specs)->antispecs
+	  = (*specs)->charzero = (*specs)->zero_octal_hex = (*specs)->prec_zero = (*specs)->unicode = 0;
 
 	while (*format != '%' && *format)
 		{

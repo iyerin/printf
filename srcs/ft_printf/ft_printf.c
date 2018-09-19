@@ -1,25 +1,43 @@
 #include "ft_printf.h"
 
-// int	ft_putstr_zero(char const *s)
-// {
-// 	int i;
+int ft_find_replace_unicode(char const *s, wchar_t unicode_char)
+{
+	int i;
 
-// 	i = 0;
-// 	if (!s)
-// 		return (i);
-// 	while (*s)
-// 	{
-// 		i += write(1, s, 1);
-// 		s++;
-// 	}
-// 	write(1, "\0", 1);
-// 	return (i);
-// }
+	i = 0;
+	if (!s)
+		return (i);
+	while (*s)
+	{
+		if(*s == 2)
+			i += ft_putchar(unicode_char);
+		else
+			i += write(1, s, 1);
+		s++;
+	}
+	return (i);
+}
+
+int 	ft_print_unicode_str(wchar_t *unicode_str)
+{
+	int i;
+//printf("HUI\n");
+	i = 0;
+	if (!unicode_str)
+		return (i);
+	//ft_putchar(*unicode_str);
+	while (*unicode_str)
+	{
+		i += ft_putchar(*unicode_str);
+		unicode_str++;
+	}
+	return (i);
+}
 
 int	ft_find_replace_null_decimal(char const *s)
 {
 	int i;
-	//printf("HUUUUUI\n");
+
 	i = 0;
 	if (!s)
 		return (i);
@@ -29,15 +47,13 @@ int	ft_find_replace_null_decimal(char const *s)
 			i += write(1, s, 1);
 		s++;
 	}
-	//printf("i = %i\n", i);
-	//write(1, "\0", 1);
 	return (i);
 }
 
 int	ft_find_replace_null_char(char const *s)
 {
 	int i;
-	//printf("TYYYYYYT\n");
+
 	i = 0;
 	if (!s)
 		return (i);
@@ -46,12 +62,9 @@ int	ft_find_replace_null_char(char const *s)
 		if(*s == 2)
 			i += write(1, "\0", 1);
 		else
-			i += write(1, s, 1);
-		
+			i += write(1, s, 1);		
 		s++;
 	}
-	//printf("i = %i\n", i);
-	//write(1, "\0", 1);
 	return (i);
 }
 
@@ -67,7 +80,6 @@ char *ft_str_to_upper(char *str)
 		i++;
 		str++;
 	}
-
 	return (tmp);
 }
 
@@ -80,11 +92,12 @@ int ft_printf(const char *format, ...)
   	ssize_t bytes_counter = 0;
   	ssize_t init_str_len = 0;
   	size_t universal_var;
-  //	char c;
+  	wchar_t unicode_char;
+  	wchar_t *unicode_str;
 
-  //	str = malloc(1024);
     va_start(arg_list, format);
     str = NULL;
+    unicode_str = NULL;
     while ((j = ft_parser(format, &specs, &bytes_counter)))
     {
     	//printf("i = %zu\n", bytes_counter);
@@ -102,22 +115,38 @@ int ft_printf(const char *format, ...)
     	}
     	if (specs->specs == 's')
     	{
-			str = va_arg(arg_list, char*);
-			if (!str)
-			{
-				str = ft_strnew(6);
-				str = "(null)";
+    		if (specs->length == 'l')
+    		{
+    			unicode_str = va_arg(arg_list, wchar_t*);
+				specs->unicode = '2';
+    		}
+    		else 
+    		{
+    			str = va_arg(arg_list, char*);
+				if (!str)
+				{
+					str = ft_strnew(6);
+					str = "(null)";
+				}
 			}
 		}
-    	if (specs->specs == 'c')
+    	if ((specs->specs == 'c') || (specs->specs == 'C'))
     	{
     		str = ft_strnew(1);
-    		str[0] = va_arg(arg_list, int);
-			if (!str[0])
+    		if ((specs->specs == 'c') && (specs->length != 'l'))
+    		{
+    			str[0] = va_arg(arg_list, int);
+				if (!str[0])
+				{
+					specs->charzero = '1';
+					str[0] = 2;
+				}
+			}
+			else if ((specs->length == 'l') || specs->specs == 'C')
 			{
-			//	printf("HUYARA\n");
-				str = ft_strnew(1);
-				specs->charzero = '1';
+				specs->specs = 'C';
+	    		unicode_char = va_arg(arg_list, wint_t);
+				specs->unicode = '1';
 				str[0] = 2;
 			}
     	}
@@ -156,47 +185,54 @@ int ft_printf(const char *format, ...)
 	    	str[0] = specs->antispecs;
 	    	specs->specs = 'c';
 	    }
-
-	    if (!str)
+	    if (specs->specs == 'S')
 	    {
-	    	//printf("SSSSSSSS\n");
-	    	return (bytes_counter);
-	    }
-
-	    // S
+    		unicode_str = va_arg(arg_list, wchar_t*);
+			specs->unicode = '2';
+		}
 	 //    if (specs->specs == 'C')
-	 //    {			    		
-	 //    	universal_var = va_arg(arg_list, size_t);
-		// 	ft_length_unsigned_conversion(&str, specs, 16, universal_var);
-		// 	str = ft_str_to_upper(str);
+	 //    {
+	 //    //printf("%s\n", "HHHHHHHHHHHH");			    		
+  //   		str = ft_strnew(1);
+  //   		unicode_char = va_arg(arg_list, int);
+		// 	specs->unicode = '1';
+		// 	str[0] = 2;
 		// }
 
+	    if ((!str) && (!unicode_str))
+	    {
+	    	//printf("YO\n");
+	    	return (bytes_counter);
+	    }
 	// 	printf("str = %s\n", str);
 	    init_str_len = ft_strlen(str);
     	
-    	//printf("TYT\n");
-    	if(str[0] == '-')
-    		specs->negative = '1';
-    	if(str[0] == '0')
-    		specs->zero_octal_hex = '1';
-    	//printf("TYT2\n");
-    	
-    	ft_precision_conversion(&str, specs, init_str_len);
-    //	printf("str2 = %s\n", str);
-    	
-    	ft_flag_conversion(&str, specs);
-    //	printf("str3 = %s\n", str);
+	    if (!specs->unicode)
+		{    	
+			if(str[0] == '-')
+	    		specs->negative = '1';
+	    	if(str[0] == '0')
+	    		specs->zero_octal_hex = '1';
+	    	
+	    	ft_precision_conversion(&str, specs, init_str_len);
+	    //	printf("str2 = %s\n", str);
+	    	
+	    	ft_flag_conversion(&str, specs);
+	    //	printf("str3 = %s\n", str);
 
-    	ft_width_conversion(&str, specs);
-    //	printf("str4 = %s\n", str);
-
-    	if ((specs->prec_zero == '1') && (!specs->charzero))
+	    	ft_width_conversion(&str, specs);
+	    //	printf("str4 = %s\n", str);
+    	}
+    	if (specs->unicode == '1')
+    		bytes_counter += ft_find_replace_unicode(str, unicode_char);
+    	else if (specs->unicode == '2')
+    	{
+    		bytes_counter += ft_print_unicode_str(unicode_str);
+    	}
+    	else if ((specs->prec_zero == '1') && (!specs->charzero))
     		bytes_counter += ft_find_replace_null_decimal(str); 
     	else if (specs->charzero == '1')
-    	{
-    		//printf("%s\n", );
     		bytes_counter += ft_find_replace_null_char(str); 
-    	}
     	else
     		bytes_counter += ft_putstr(str);
 	    //free (specs);
