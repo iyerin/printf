@@ -21,9 +21,9 @@ int main(void)
 	// j = ft_printf("my = %-3.2d\n", 4);
  //    k =    printf("st = %-3.2d\n", 4);
 
-    j = ft_printf("my = %");
+    j = ft_printf("my = %5.3S", L"лала");
     printf("\n");
-    k =    printf("st = %");
+    k =    printf("st = %5.3ls", L"лала");
 
     printf("\nmy = %i\nst = %i\n", j, k);
 

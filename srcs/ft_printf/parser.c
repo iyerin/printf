@@ -32,12 +32,6 @@ int   ft_parser(const char *format, t_flags **specs, ssize_t *bytes_counter)
 	if (!*format)
 		return (0);
 	format++;
-	// if (*format == '%')
-	// {
-	// 	*bytes_counter += write(1, "%", 1);
-	// 	format++;
-	// 	return (format - tmp2);
- // 	}
 
 	while (*format == '#' || *format == '0' || *format == '-' || *format == '+'|| *format == ' ')
 	{
@@ -53,14 +47,12 @@ int   ft_parser(const char *format, t_flags **specs, ssize_t *bytes_counter)
 			(*specs)->space = '1';
 		format++;
 	}
-
 	while ((*format >= '0') && (*format <= '9'))
 			tmp[i++] = *format++;
 		tmp[i] = 0;
 		(*specs)->width = ft_atoi(tmp);
 		ft_bzero(tmp, 1024);
 		i = 0;
-	
 	if (*format == '.')
 	{
 		format++;
@@ -70,7 +62,6 @@ int   ft_parser(const char *format, t_flags **specs, ssize_t *bytes_counter)
 		if((*specs)->precision == 0)
 			(*specs)->prec_zero = '1';
 	}	
-
 	if (*format == 'h' || *format == 'l' || *format == 'j' || *format == 'z')
 	{
 		if (*format == 'h')
@@ -78,7 +69,7 @@ int   ft_parser(const char *format, t_flags **specs, ssize_t *bytes_counter)
 			if (*(format + 1) == 'h')
 			{
 				(*specs)->length = 'H';
-				format++;///////////////////////////////
+				format++;
 			}
 			else 
 				(*specs)->length = 'h';
@@ -88,7 +79,7 @@ int   ft_parser(const char *format, t_flags **specs, ssize_t *bytes_counter)
 			if (*(format + 1) == 'l')
 			{
 				(*specs)->length = 'L';
-				format++;////////////////////////
+				format++;
 			}
 			else 
 				(*specs)->length = 'l';
@@ -97,16 +88,10 @@ int   ft_parser(const char *format, t_flags **specs, ssize_t *bytes_counter)
 			(*specs)->length = *format;
 		format++;
 	}
-	//(*specs)->specs = *format;
 	if (ft_specifier_is_true(*format))
-	{
-		//printf("c = %c\n", *format);
 		(*specs)->specs = *format;
-	}
 	else
-	{
 		(*specs)->antispecs = *format;
-	}
 	format++;
 	// printf(" plus %c\n", (*specs)->plus);
 	// printf("minus %c\n", (*specs)->minus);
@@ -119,7 +104,5 @@ int   ft_parser(const char *format, t_flags **specs, ssize_t *bytes_counter)
 	// printf("Spec = %c\n", (*specs)->specs);
 	
 	//free (specs);
-	
-	//printf("step = %d\n", tmp2-format);
 	return (format - tmp2);
 }

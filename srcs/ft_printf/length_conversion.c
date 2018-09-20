@@ -20,19 +20,15 @@ void ft_length_signed_conversion(char **str, t_flags *specs, size_t base, size_t
 	 	signed_var = (ssize_t)universal_var;
 	else
 		signed_var = (int)universal_var;
-//	printf("SV = %zi\n", signed_var);
 	if (signed_var < 0)
 	{
 		unsigned_var = signed_var * -1;//////////////////////////
 		*str = ft_itoa_base(unsigned_var, base);
-		*str = ft_strjoin("-", *str);
+		*str = ft_strjoin("-", *str);//////поднять вверх для 25 строк
 	
 	}
 	else
-	{
 		*str = ft_itoa_base(signed_var, base);
-	}
-//		printf("str = %s\n", *str);
 }
 
 void ft_length_unsigned_conversion(char **str, t_flags *specs, size_t base, size_t universal_var)

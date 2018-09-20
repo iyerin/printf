@@ -14,9 +14,7 @@ void ft_flag_conversion(char **str, t_flags *specs)
 				*str = ft_strjoin("0x", *str);
 			if (specs->specs == 'X')
 				*str = ft_strjoin("0X", *str);
-			
 		}
-		
 		if ((specs->specs == 'o') || (specs->specs == 'O'))
 			if (*str[0] != '0')
 				*str = ft_strjoin("0", *str);
