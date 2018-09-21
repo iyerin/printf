@@ -121,7 +121,6 @@ void ft_unicode_conversion(wchar_t *unicode_str, t_flags *specs, ssize_t *bytes_
 	new_str = tmp2;
 //	printf("\ni = %zi\n", i);
 //	printf("str2 = %S\n", new_str);
-	if (i )
 	if (specs->width > i)
 	{
 		if (specs->minus)
@@ -143,8 +142,8 @@ void ft_unicode_conversion(wchar_t *unicode_str, t_flags *specs, ssize_t *bytes_
 			*bytes_counter += ft_print_unicode_str(new_str);
 		}
 	}
-	specs->unicode = 0;////////////////////////////////////////////////////////// ТУТ НЕПРАВИЛЬНО РАБОТАЕТ
-
+	else 
+		*bytes_counter += ft_print_unicode_str(new_str);
 }
 
 int	ft_find_replace_null_decimal(char const *s)
@@ -229,14 +228,9 @@ int ft_printf(const char *format, ...)
 			}
 			ft_length_signed_conversion(&str, specs, 10, universal_var);
     	}
-    	if (specs->specs == 's')
+    	if ((specs->specs == 's') || (specs->specs == 'S'))
     	{
-    		if (specs->length == 'l')
-    		{
-    			unicode_str = va_arg(arg_list, wchar_t*);
-				specs->unicode = '2';
-    		}
-    		else 
+    		if ((specs->specs == 's') && (specs->length != 'l'))
     		{
     			str = va_arg(arg_list, char*);
 				if (!str)
@@ -245,7 +239,22 @@ int ft_printf(const char *format, ...)
 					str = "(null)";
 				}
 			}
+			if (((specs->specs == 's') && (specs->length == 'l')) || (specs->specs == 'S'))
+    		{
+    			unicode_str = va_arg(arg_list, wchar_t*);
+    			//specs->specs = 'S';
+    			specs->unicode = '2';
+    			if (!unicode_str)
+					{
+						specs->unicode = 0;
+						specs->specs = 's';
+						str = ft_strnew(6);
+						str = "(null)";
+
+					}
+    		}
 		}
+
     	if ((specs->specs == 'c') || (specs->specs == 'C'))
     	{
     		str = ft_strnew(1);
@@ -301,17 +310,7 @@ int ft_printf(const char *format, ...)
 	    	str[0] = specs->antispecs;
 	    	specs->specs = 'c';
 	    }
-	    if (specs->specs == 'S')
-	    {
-	    	//printf("tyt\n");
-    		unicode_str = va_arg(arg_list, wchar_t*);
-			specs->unicode = '2';
-			if (!unicode_str)
-			{
-				str = ft_strnew(6);
-				str = "(null)";
-			}
-		}
+
 	 //    if (specs->specs == 'C')
 	 //    {
 	 //    //printf("%s\n", "HHHHHHHHHHHH");			    		
@@ -348,14 +347,14 @@ int ft_printf(const char *format, ...)
 	    	ft_width_conversion(&str, specs);
 	    //	printf("str4 = %s\n", str);
     	}
-    	if (specs->unicode)
+    	if (specs->unicode == '2')
 			ft_unicode_conversion(unicode_str, specs, &bytes_counter);
-    	if (specs->unicode == '1')
+    	else if (specs->unicode == '1')
     		bytes_counter += ft_find_replace_unicode(str, unicode_char);
-    	else if (specs->unicode == '2')
-    	{
-    		bytes_counter += ft_print_unicode_str(unicode_str);
-    	}
+    	// else if (specs->unicode == '2')
+    	// {
+    	// 	bytes_counter += ft_print_unicode_str(unicode_str);
+    	// }
     	else if ((specs->prec_zero == '1') && (!specs->charzero))
     		bytes_counter += ft_find_replace_null_decimal(str); 
     	else if (specs->charzero == '1')
