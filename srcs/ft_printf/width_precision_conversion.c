@@ -15,22 +15,14 @@ void ft_width_conversion(char **str, t_flags *specs)
 	ssize_t j;
 
 	j = specs->width - ft_strlen(*str);
-	//printf("j = %zi\n", j);
 	if ((specs->prec_zero == '1') && (specs->specs != 'c'))
 		j = specs->width;
 	if (specs->specs != 'S')
 	{
-		//printf("TTT\n");
 		if (j > 0)
 			while(j-- > 0)
 				*str = ft_strjoin(" ", *str);
 	}
-	// else if (specs->specs == 'S')
-	// {
-	// 	if (j > 0)
-	// 		while(j-- > 0)
-	// 			*str = ft_strjoin(" ", *char(*unicode_str));
-	// }
 }
 
 void ft_precision_conversion(char **str, t_flags *specs, ssize_t init_str_len)
