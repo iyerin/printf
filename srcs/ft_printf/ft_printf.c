@@ -29,7 +29,7 @@ int ft_find_replace_unicode(char const *s, wchar_t unicode_char)
 		return (i);
 	while (*s)
 	{
-		printf("mb = %i\n", MB_CUR_MAX);
+		//printf("mb = %i\n", MB_CUR_MAX);
 		if((*s == 2) && MB_CUR_MAX > 1)
 			i += ft_putchar(unicode_char);
 		else
