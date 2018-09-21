@@ -29,10 +29,12 @@ int ft_find_replace_unicode(char const *s, wchar_t unicode_char)
 		return (i);
 	while (*s)
 	{
-		if((*s == 2) && MB_CUR_MAX > 1)
+		if((*s == 2) && (unicode_char) && MB_CUR_MAX > 1)
 			i += ft_putchar(unicode_char);
+		else if ((*s == 2) && (unicode_char))
+			i += write(1, &unicode_char, 1);
 		else
-			i += write(1, s, 1);
+			write(1, s, 1);
 		s++;
 	}
 	return (i);
