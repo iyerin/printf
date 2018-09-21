@@ -29,7 +29,6 @@ int ft_find_replace_unicode(char const *s, wchar_t unicode_char)
 		return (i);
 	while (*s)
 	{
-		//printf("mb = %i\n", MB_CUR_MAX);
 		if((*s == 2) && MB_CUR_MAX > 1)
 			i += ft_putchar(unicode_char);
 		else
@@ -271,12 +270,40 @@ int ft_printf(const char *format, ...)
 			}
 			else if ((specs->length == 'l') || specs->specs == 'C')
 			{
-				specs->specs = 'C';
+				specs->specs = 'c';
 	    		unicode_char = va_arg(arg_list, wint_t);
 				specs->unicode = '1';
 				str[0] = 2;
+				if (!unicode_char)
+				{
+					specs->unicode = 0;
+					specs->charzero = '1';
+					specs->specs = 'c';
+				}
 			}
     	}
+
+
+   //  	if ((specs->specs == 'c') || (specs->specs == 'C'))
+   //  	{
+   //  		str = ft_strnew(1);
+   //  		if ((specs->specs == 'c') && (specs->length != 'l'))
+   //  		{
+   //  			str[0] = va_arg(arg_list, int);
+			// 	if (!str[0])
+			// 	{
+			// 		specs->charzero = '1';
+			// 		str[0] = 2;
+			// 	}
+			// }
+			// else if ((specs->length == 'l') || specs->specs == 'C')
+			// {
+			// 	specs->specs = 'C';
+	  //   		unicode_char = va_arg(arg_list, wint_t);
+			// 	specs->unicode = '1';
+			// 	str[0] = 2;
+			// }
+   //  	}
     	if (specs->specs == 'p')
 			str = ft_strjoin("0x", ft_itoa_base(va_arg(arg_list, ssize_t), 16));
 	    // if (specs->specs == 'D')
@@ -333,8 +360,9 @@ int ft_printf(const char *format, ...)
 	// 	printf("str = %s\n", str);
 	    init_str_len = ft_strlen(str);
     	
-	    if (!specs->unicode)
-		{    	
+	    if (specs->unicode != '2')
+		{ 
+			//printf("RRR\n");   	
 			if(str[0] == '-')
 	    		specs->negative = '1';
 	    	if(str[0] == '0')
@@ -352,7 +380,10 @@ int ft_printf(const char *format, ...)
     	if (specs->unicode == '2')
 			ft_unicode_conversion(unicode_str, specs, &bytes_counter);
     	else if (specs->unicode == '1')
+    	{
+    		//printf("AAA\n");
     		bytes_counter += ft_find_replace_unicode(str, unicode_char);
+    	}
     	// else if (specs->unicode == '2')
     	// {
     	// 	bytes_counter += ft_print_unicode_str(unicode_str);
