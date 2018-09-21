@@ -27,6 +27,7 @@ int ft_find_replace_unicode(char const *s, wchar_t unicode_char)
 	i = 0;
 	if (!s)
 		return (i);
+	//write(1, "a", 1);
 	while (*s)
 	{
 		//printf("mb = %i\n", MB_CUR_MAX);
@@ -208,7 +209,7 @@ int ft_printf(const char *format, ...)
   	wchar_t unicode_char;
   	wchar_t *unicode_str;
 
-  	printf("==%C==", va_arg(arg_list, wchar_t));
+  	//printf("==%C==", va_arg(arg_list, wchar_t));
   //	unicode_str = malloc(sizeof(wchar_t) * 1024);
 
 
@@ -247,13 +248,13 @@ int ft_printf(const char *format, ...)
     			//specs->specs = 'S';
     			specs->unicode = '2';
     			if (!unicode_str)
-					{
-						specs->unicode = 0;
-						specs->specs = 's';
-						str = ft_strnew(6);
-						str = "(null)";
+				{
+					specs->unicode = 0;
+					specs->specs = 's';
+					str = ft_strnew(6);
+					str = "(null)";
 
-					}
+				}
     		}
 		}
 
@@ -273,7 +274,14 @@ int ft_printf(const char *format, ...)
 			{
 				specs->specs = 'C';
 	    		unicode_char = va_arg(arg_list, wint_t);
-				specs->unicode = '1';
+	    		specs->unicode = '1';
+				if (!str[0])
+				{
+					specs->charzero = '1';
+					specs->unicode = 0;
+					specs->specs = 'c';
+				}
+				
 				str[0] = 2;
 			}
     	}
