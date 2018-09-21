@@ -29,7 +29,8 @@ int ft_find_replace_unicode(char const *s, wchar_t unicode_char)
 		return (i);
 	while (*s)
 	{
-		if(*s == 2)
+		printf("mb = %i\n", MB_CUR_MAX);
+		if((*s == 2) && MB_CUR_MAX > 1)
 			i += ft_putchar(unicode_char);
 		else
 			i += write(1, s, 1);
@@ -207,6 +208,7 @@ int ft_printf(const char *format, ...)
   	wchar_t unicode_char;
   	wchar_t *unicode_str;
 
+  	printf("=======%s\n==========", format);
   //	unicode_str = malloc(sizeof(wchar_t) * 1024);
 
 
