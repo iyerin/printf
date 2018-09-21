@@ -208,7 +208,7 @@ int ft_printf(const char *format, ...)
   	wchar_t unicode_char;
   	wchar_t *unicode_str;
 
-  	printf("==%s==", format);
+  	printf("==%C==", va_arg(arg_list, wchar_t));
   //	unicode_str = malloc(sizeof(wchar_t) * 1024);
 
 
