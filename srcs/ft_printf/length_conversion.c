@@ -5,6 +5,7 @@ void ft_length_signed_conversion(char **str, t_flags *specs, size_t base, size_t
 {
 	ssize_t signed_var;
 	size_t unsigned_var = 0;
+	char *tmp;
 
 	if (specs->length == 'H')
     	signed_var = (signed char)universal_var;
@@ -20,12 +21,12 @@ void ft_length_signed_conversion(char **str, t_flags *specs, size_t base, size_t
 	 	signed_var = (ssize_t)universal_var;
 	else
 		signed_var = (int)universal_var;
-	if (signed_var < 0)
+	if (signed_var < 0 && (unsigned_var = signed_var * -1))
 	{
-		unsigned_var = signed_var * -1;//////////////////////////
 		*str = ft_itoa_base(unsigned_var, base);
+		tmp = *str;
 		*str = ft_strjoin("-", *str);//////поднять вверх для 25 строк
-	
+		ft_strdel(&tmp);
 	}
 	else
 		*str = ft_itoa_base(signed_var, base);

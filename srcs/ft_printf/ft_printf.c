@@ -14,6 +14,31 @@ int	ft_countchar(int value)
 		return (0);
 }
 
+int ft_countchar_unicode_str(wchar_t *unicode_str)
+{	
+	int i = 0;
+	while (*unicode_str)
+	{
+		i += ft_countchar(*unicode_str);
+		unicode_str++;
+	}
+	return (i);
+}
+
+
+size_t	ft_unicode_str_len(wchar_t *unicode_str)
+{
+	size_t i = 0;
+
+	while (*unicode_str)
+	{
+		i += 4;
+		unicode_str++;
+	}
+	//printf("i = %zi\n", i);
+	return (i);
+}
+
 int ft_find_replace_unicode(char const *s, wchar_t unicode_char)
 {
 	int i;
@@ -37,24 +62,23 @@ int ft_find_replace_unicode(char const *s, wchar_t unicode_char)
 wchar_t  *ft_unicode_precision(wchar_t *unicode_str, t_flags *specs)
 {
 	wchar_t	*new_str;
+	int i;
 	int j = specs->precision;
 	int k = 0;
-	wchar_t *tmp;
 
+	i = 0;
 	new_str = ft_memalloc(sizeof(wchar_t) * (specs->precision + 1));
-	tmp = new_str;
 	while(j > 0)
 	{
 		k = ft_countchar(*unicode_str);
 		if(j >= k)
 		{
-			*new_str = *unicode_str;
-			new_str++;
-			unicode_str++;
+			new_str[i] = unicode_str[i];
+			i++;
 		}
 		j -= k;
 	}
-	return (tmp);
+	return (new_str);
 }
 
 int 	ft_print_unicode_str(wchar_t *unicode_str)
@@ -75,52 +99,32 @@ int 	ft_print_unicode_str(wchar_t *unicode_str)
 void ft_unicode_conversion(wchar_t *unicode_str, t_flags *specs, ssize_t *bytes_counter)
 {
 	size_t i = 0;
-	wchar_t	*tmp;
-	wchar_t *tmp2;
-	wchar_t *new_str;
+	wchar_t *new_str = NULL;
 
-	tmp = unicode_str;
-	while (*unicode_str)
-	{
-		i += ft_countchar(*unicode_str);
-		unicode_str++;
-	}
-	unicode_str = tmp;
+	i = ft_countchar_unicode_str(unicode_str);
+
 	if (((specs->precision > 0) || (specs->prec_zero)) &&  (size_t)specs->precision < i)
+	{
 		new_str = ft_unicode_precision(unicode_str, specs);
+		ft_memdel((void**)(&unicode_str));
+	}
 	else
 		new_str = unicode_str;
-	tmp2 = new_str;
-	i = 0;
-	while (*new_str)
-	{
-		i += ft_countchar(*new_str);
-		new_str++;
-	}
-	new_str = tmp2;
+
+	i = ft_countchar_unicode_str(new_str);
+
 	if (specs->width > i)
 	{
 		if (specs->minus)
-		{
 			*bytes_counter += ft_print_unicode_str(new_str);
-			while (specs->width > i)
-			{
-				*bytes_counter += write(1, " ", 1);
-				specs->width --;
-			}
-		}
-		else
-		{
-			while (specs->width > i)
-			{
-				*bytes_counter += write(1, " ", 1);
-				specs->width --;
-			}
+		while (specs->width-- > i)
+			*bytes_counter += write(1, " ", 1);
+		if (!specs->minus)
 			*bytes_counter += ft_print_unicode_str(new_str);
-		}
 	}
 	else 
 		*bytes_counter += ft_print_unicode_str(new_str);
+	ft_memdel((void**)(&new_str));
 }
 
 int	ft_find_replace_null_decimal(char const *s)
@@ -169,7 +173,7 @@ char *ft_str_to_upper(char *str)
 		i++;
 		str++;
 	}
-	return (tmp);
+	return (tmp);//////////////////////leak
 }
 
 int ft_printf(const char *format, ...)
@@ -183,6 +187,9 @@ int ft_printf(const char *format, ...)
   	size_t universal_var;
   	wchar_t unicode_char;
   	wchar_t *unicode_str;
+  	char *tmp;
+  	wchar_t *tmp2;
+  	//size_t usl;
 
     va_start(arg_list, format);
     str = NULL;
@@ -207,18 +214,26 @@ int ft_printf(const char *format, ...)
     			str = va_arg(arg_list, char*);
 				if (!str)
 					str = ft_strdup("(null)");
+				else 
+					str = ft_strdup(str);
 			}
 			if (((specs->specs == 's') && (specs->length == 'l')) || (specs->specs == 'S'))
     		{
     			unicode_str = va_arg(arg_list, wchar_t*);
-    			//specs->specs = 'S';
-    			specs->unicode = '2';
     			if (!unicode_str)
 					{
 						specs->unicode = 0;
 						specs->specs = 's';
 						str = ft_strdup("(null)");
 					}
+				else
+				{
+	    			tmp2 = ft_memalloc(sizeof(wchar_t) * (ft_unicode_str_len(unicode_str) + 1));
+	    			unicode_str = ft_memcpy(tmp2, unicode_str, ft_unicode_str_len(unicode_str));
+
+	    			//specs->specs = 'S';
+	    			specs->unicode = '2';
+				}
     		}
 		}
     	if ((specs->specs == 'c') || (specs->specs == 'C'))
@@ -248,7 +263,12 @@ int ft_printf(const char *format, ...)
 			}
     	}
     	if (specs->specs == 'p')
-			str = ft_strjoin("0x", ft_itoa_base(va_arg(arg_list, ssize_t), 16));
+    	{
+			str = ft_itoa_base(va_arg(arg_list, ssize_t), 16);
+			tmp = str;
+			str = ft_strjoin("0x", str);
+			ft_strdel(&tmp);
+    	}
 	    if (specs->specs == 'o')
 		{	
 			universal_var = va_arg(arg_list, size_t);
@@ -268,7 +288,9 @@ int ft_printf(const char *format, ...)
 	    {			    		
 	    	universal_var = va_arg(arg_list, size_t);
 			ft_length_unsigned_conversion(&str, specs, 16, universal_var);
+			tmp = str;
 			str = ft_str_to_upper(str);
+			ft_strdel(&tmp);
 		}
 		if (specs->specs == 'U')
 			str = ft_itoa_base(va_arg(arg_list, unsigned long int), 10);
@@ -281,7 +303,11 @@ int ft_printf(const char *format, ...)
 	    	specs->specs = 'c';
 	    }		
 	    if ((!str) && (!unicode_str))
-	    	return (bytes_counter);
+	    {
+	    	ft_strdel(&str);
+	    	free (specs);
+	    	return (bytes_counter);///////////////////////////doesn't work
+	    }
 	// 	printf("str = %s\n", str);
 	    init_str_len = ft_strlen(str);
     	
@@ -308,10 +334,16 @@ int ft_printf(const char *format, ...)
     		bytes_counter += ft_find_replace_null_char(str); 
     	else
     		bytes_counter += ft_putstr(str);
+    	ft_strdel(&str);
+    	//ft_memdel((void**)(&unicode_str));
 	    free (specs);
 	    format += j;
     }
     va_end(arg_list);
-    //ft_strdel(&str);
+    ft_strdel(&str);
+    // write(1, "\n================================\n", 34);
+   	// system("leaks a.out ");
+   	// write(1, "\n================================\n", 34);
+   	free (specs);
     return (bytes_counter);
 }
