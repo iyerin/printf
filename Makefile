@@ -1,19 +1,3 @@
-# NAME = ft_printf
-
-
-# all:
-# 	@ gcc -o $(NAME) *.c iyerin/libft.a && ./ft_printf
-
-# # clean:
-# # 	rm -f libft/*.o
-
-# fclean: 
-# 	@ rm -f  $(NAME)
-
-# re:	fclean all
-
-
-
 .PHONY: all clean fclean re
 
 NAME = libftprintf.a
@@ -34,7 +18,8 @@ ORIGINAL_LIST = ft_atoi.c ft_bzero.c  ft_isalnum.c ft_isalpha.c \
 		ft_strncpy.c ft_strnequ.c ft_strnew.c ft_strnstr.c \
 		ft_strrchr.c ft_strsplit.c ft_strstr.c ft_strsub.c ft_putchar.c ft_putnbr.c ft_putstr.c\
 		ft_strtrim.c ft_tolower.c ft_toupper.c  ft_itoa_base.c\
-		ft_printf.c parser.c flag_conversion.c length_conversion.c width_precision_conversion.c
+		ft_printf.c parser.c flag_conversion.c length_conversion.c width_precision_conversion.c\
+		args.c unicode_1.c unicode_2.c
  
 OBJ_LIST = $(ORIGINAL_LIST:.c=.o)
 
